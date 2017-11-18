@@ -2,3 +2,5 @@
 node_modules/
 ios/build/
 android/build/
+ios/marauderMap.xcodeproj/project.pbxproj
+ios/marauderMap/Info.plist

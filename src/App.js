@@ -9,8 +9,10 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  Image
 } from 'react-native';
+import { Card, ListItem, Button, FormInput, FormLabel } from 'react-native-elements'
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
@@ -19,19 +21,34 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
-export default class App extends Component<{}> {
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state={
+      input: "",
+    };
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
+        <Card
+          containerStyle={styles.card}
+          title='Purveyors of Aids to Magical Mischief-Makers are proud to present'
+          image={require('../images/marauders-map.jpg')}>
+          <FormLabel>Enter your name to activate the Homonculous Charm</FormLabel>
+          <FormInput
+            ref={input => this.input = input}
+            onChangeText={input => this.setState({input})}
+            autoFocus
+          />
+          <Button
+            backgroundColor='#03A9F4'
+            fontFamily='Arial'
+            buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+            title='ENTER'
+            onPress={() => console.log(this.state.input)}/>
+        </Card>
       </View>
     );
   }
@@ -41,17 +58,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  card: {
+    marginTop: 30,
+    marginBottom: 30,
+    flex: 1,
+  }
 });

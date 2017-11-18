@@ -9,7 +9,9 @@
 	"dependencies": {
 		"react": "16.0.0",
 		"react-native": "0.50.3",
-		"react-native-beacons-manager": "^1.0.7"
+		"react-native-beacons-manager": "^1.0.7",
+		"react-native-elements": "^0.18.2",
+		"react-native-vector-icons": "^4.4.2"
 	},
 	"devDependencies": {
 		"babel-jest": "21.2.0",

@@ -32,17 +32,18 @@ export default class Home extends Component {
       <View style={styles.container}>
         <Card
           containerStyle={styles.card}
-          title='Purveyors of Aids to Magical Mischief-Makers are proud to present'
-          image={require('../../images/marauders-map.jpg')}>
-          <FormLabel>Enter your name to activate the Homonculous Charm</FormLabel>
+          title='Purveyors of aids to magical mischief-makers are proud to present'
+          image={require('../../images/marauders.jpg')}>
+          <FormLabel>Enter your name to activate the homonculous charm</FormLabel>
           <FormInput
             ref={input => this.input = input}
             onChangeText={input => this.setState({input})}
             autoFocus
           />
           <Button
-            backgroundColor='#03A9F4'
-            fontFamily='Arial'
+            backgroundColor='#400D12'
+            fontFamily='Arial'      
+            color='#E7C89A'
             buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
             title='ENTER'
             onPress={this.toLocation}/>

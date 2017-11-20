@@ -24,7 +24,6 @@ export default class Location extends Component {
 
   async updateBluetoothStatus() {
     try{
-      console.log("lollolololololololo");
       console.log(BluetoothStatus);
       const isEnabled = await BluetoothStatus.state();
       console.log("isEnabled ", isEnabled);

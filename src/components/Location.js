@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { BluetoothStatus } from 'react-native-bluetooth-status'
+import  DeviceInfo from 'react-native-device-info'
 
 export default class Location extends Component {
 
@@ -41,6 +42,9 @@ export default class Location extends Component {
         <Text>{ input }</Text>
         <Text style={styles.instructions}>
           Bluetooth is: { this.state.bluetoothState }
+        </Text>
+        <Text style={styles.instructions}>
+          Device info is: { DeviceInfo.getDeviceName() }
         </Text>
       </View>
     );

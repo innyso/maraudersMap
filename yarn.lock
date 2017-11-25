@@ -3388,6 +3388,10 @@ react-native-bluetooth-status@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/react-native-bluetooth-status/-/react-native-bluetooth-status-1.1.3.tgz#74def98a4ecc1848b3a499fc705bfeb290a44ca2"
 
+react-native-device-info@^0.12.1:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-0.12.1.tgz#659ed145caa5a86a4815904381b25e9ebe0c24f6"
+
 react-native-dismiss-keyboard@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/react-native-dismiss-keyboard/-/react-native-dismiss-keyboard-1.0.0.tgz#32886242b3f2317e121f3aeb9b0a585e2b879b49"

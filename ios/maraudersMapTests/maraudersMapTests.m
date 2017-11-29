@@ -16,11 +16,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React Native!"
 
-@interface marauderMapTests : XCTestCase
+@interface maraudersMapTests : XCTestCase
 
 @end
 
-@implementation marauderMapTests
+@implementation maraudersMapTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {

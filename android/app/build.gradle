@@ -98,7 +98,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.maraudermap"
+        applicationId "com.maraudersmap"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
@@ -137,7 +137,6 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-device-info')
     compile project(':react-native-vector-icons')
     compile project(':react-native-beacons-manager')
     compile fileTree(dir: "libs", include: ["*.jar"])

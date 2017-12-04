@@ -5,23 +5,28 @@
  */
 
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   StyleSheet,
-  Text,
   View,
-  Image
 } from 'react-native';
-import { Card, ListItem, Button, FormInput, FormLabel } from 'react-native-elements'
+import {
+  Card,
+  Button,
+  FormInput,
+  FormLabel,
+} from 'react-native-elements';
 
 export default class Home extends Component {
   constructor(props) {
     super(props);
-    this.state={
-      input: "",
+    this.state = {
+      input: '',
     };
   }
 
-  toLocation = () => {
+  onPress = () => {
+    this.props.onPress();
     this.props.navigation.navigate('Location', {
       input: this.state.input,
     });
@@ -32,26 +37,46 @@ export default class Home extends Component {
       <View style={styles.container}>
         <Card
           containerStyle={styles.card}
-          title='Purveyors of aids to magical mischief-makers are proud to present'
-          image={require('../../images/marauders.jpg')}>
+          title="Purveyors of aids to magical mischief-makers are proud to present"
+          image={require('../../images/marauders.jpg')}
+        >
           <FormLabel>Enter your name to activate the homonculous charm</FormLabel>
           <FormInput
-            ref={input => this.input = input}
-            onChangeText={input => this.setState({input})}
+            ref={(input) => { this.input = input; }}
+            onChangeText={input => this.setState({ input })}
             autoFocus
           />
           <Button
-            backgroundColor='#400D12'
-            fontFamily='Arial'      
-            color='#E7C89A'
-            buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-            title='ENTER'
-            onPress={this.toLocation}/>
+            backgroundColor="#400D12"
+            fontFamily="Arial"
+            color="#E7C89A"
+            buttonStyle={{
+              borderRadius: 0,
+              marginLeft: 0,
+              marginRight: 0,
+              marginBottom: 0,
+            }}
+            title="ENTER"
+            onPress={this.onPress}
+          />
         </Card>
       </View>
     );
   }
 }
+
+Home.defaultProps = ({
+  onPress: () => {},
+});
+
+Home.propTypes = ({
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+  }).isRequired,
+  // error: PropTypes.Object.isRequired,
+  // isRegistering: PropTypes.bool.isRequired,
+  onPress: PropTypes.func,
+});
 
 const styles = StyleSheet.create({
   card: {
@@ -63,5 +88,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: '#F5FCFF',
-  }
+  },
 });

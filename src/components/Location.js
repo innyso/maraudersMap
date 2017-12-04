@@ -4,44 +4,39 @@
 * @flow weak
 */
 
-import React, {
- Component
-}                             from 'react';
+import React, { Component } from 'react';
 import {
- AppRegistry,
- StyleSheet,
- View,
- Text,
- ListView
-}                             from 'react-native';
-import Beacons                from 'react-native-beacons-manager';
-import moment                 from 'moment';
-import { BluetoothStatus } from 'react-native-bluetooth-status'
+  StyleSheet,
+  View,
+  Text,
+  ListView,
+} from 'react-native';
+import Beacons from 'react-native-beacons-manager';
+import moment from 'moment';
+import { BluetoothStatus } from 'react-native-bluetooth-status';
 
 /**
 * uuid of YOUR BEACON (change to yours)
 * @type {String} uuid
 */
-const UUID        = 'B9407F30-F5F8-466E-AFF9-25556B57FE6D';
-const IDENTIFIER  = 'estimote';
+const UUID = 'B9407F30-F5F8-466E-AFF9-25556B57FE6D';
+const IDENTIFIER = 'estimote';
 const TIME_FORMAT = 'HH:mm:ss';
 const EMPTY_BEACONS_LISTS = {
-  rangingList:      [],
+  rangingList: [],
   monitorEnterList: [],
-  monitorExitList:  []
+  monitorExitList: [],
 };
 
-const deepCopyBeaconsLists = beaconsLists => {
+const deepCopyBeaconsLists = (beaconsLists) => {
   const initial = {};
   return Object
-          .keys(beaconsLists)
-          .map(key => ({ [key]: [...beaconsLists[key]] }))
-          .reduce(
-            (prev, next) => {
-              return {...prev, ...next};
-            }
-            , initial
-          );
+    .keys(beaconsLists)
+    .map(key => ({ [key]: [...beaconsLists[key]] }))
+    .reduce(
+      (prev, next) => ({ ...prev, ...next }),
+      initial,
+    );
 };
 
 export default class Location extends Component {
@@ -59,7 +54,7 @@ export default class Location extends Component {
 
   state = {
     // region information
-    uuid:       UUID,
+    uuid: UUID,
     identifier: IDENTIFIER,
 
     // check bluetooth state:
@@ -69,11 +64,11 @@ export default class Location extends Component {
 
     beaconsLists: new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2,
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-    }).cloneWithRowsAndSections(EMPTY_BEACONS_LISTS)
+      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+    }).cloneWithRowsAndSections(EMPTY_BEACONS_LISTS),
   };
 
-  componentWillMount(){
+  componentWillMount() {
     this._beaconsLists = EMPTY_BEACONS_LISTS;
     const { identifier, uuid } = this.state;
 
@@ -88,15 +83,15 @@ export default class Location extends Component {
     const region = { identifier, uuid };
     // Monitor for beacons inside the region
     Beacons
-    .startMonitoringForRegion(region) // or like  < v1.0.7: .startRangingBeaconsInRegion(identifier, uuid)
-    .then(() => console.log('Beacons monitoring started succesfully'))
-    .catch(error => console.log(`Beacons monitoring not started, error: ${error}`));
+      .startMonitoringForRegion(region) // or like  < v1.0.7: .startRangingBeaconsInRegion(identifier, uuid)
+      .then(() => console.log('Beacons monitoring started succesfully'))
+      .catch(error => console.log(`Beacons monitoring not started, error: ${error}`));
 
     // Range for beacons inside the region
     Beacons
-    .startRangingBeaconsInRegion(region) // or like  < v1.0.7: .startRangingBeaconsInRegion(identifier, uuid)
-    .then(() => console.log('Beacons ranging started succesfully'))
-    .catch(error => console.log(`Beacons ranging not started, error: ${error}`));
+      .startRangingBeaconsInRegion(region) // or like  < v1.0.7: .startRangingBeaconsInRegion(identifier, uuid)
+      .then(() => console.log('Beacons ranging started succesfully'))
+      .catch(error => console.log(`Beacons ranging not started, error: ${error}`));
 
     // update location to be able to monitor:
     Beacons.startUpdatingLocation();
@@ -106,76 +101,75 @@ export default class Location extends Component {
     // OPTIONAL: listen to authorization change
     this.authStateDidRangeEvent = Beacons.BeaconsEventEmitter.addListener(
       'authorizationStatusDidChange',
-      (info) => console.log('authorizationStatusDidChange: ', info)
+      info => console.log('authorizationStatusDidChange: ', info),
     );
 
     // Ranging: Listen for beacon changes
     this.beaconsDidRangeEvent = Beacons.BeaconsEventEmitter.addListener(
       'beaconsDidRange',
       (data) => {
-        this.setState({ message:  'beaconsDidRange event'});
+        this.setState({ message: 'beaconsDidRange event' });
         // console.log('beaconsDidRange, data: ', data);
         const updatedBeaconsLists = this.updateBeaconList(data.beacons, 'rangingList');
         this._beaconsLists = updatedBeaconsLists;
-        this.setState({ beaconsLists: this.state.beaconsLists.cloneWithRowsAndSections(this._beaconsLists)});
-      }
+        this.setState({ beaconsLists: this.state.beaconsLists.cloneWithRowsAndSections(this._beaconsLists) });
+      },
     );
 
     // monitoring events
     this.regionDidEnterEvent = Beacons.BeaconsEventEmitter.addListener(
       'regionDidEnter',
-      ({uuid, identifier}) => {
-        this.setState({ message:  'regionDidEnter event'});
-        console.log('regionDidEnter, data: ', {uuid, identifier});
+      ({ uuid, identifier }) => {
+        this.setState({ message: 'regionDidEnter event' });
+        console.log('regionDidEnter, data: ', { uuid, identifier });
         const time = moment().format(TIME_FORMAT);
-        const updatedBeaconsLists = this.updateBeaconList({uuid, identifier, time}, 'monitorEnterList');
+        const updatedBeaconsLists = this.updateBeaconList({ uuid, identifier, time }, 'monitorEnterList');
         this._beaconsLists = updatedBeaconsLists;
-        this.setState({ beaconsLists: this.state.beaconsLists.cloneWithRowsAndSections(this._beaconsLists)});
-      }
+        this.setState({ beaconsLists: this.state.beaconsLists.cloneWithRowsAndSections(this._beaconsLists) });
+      },
     );
 
     this.regionDidExitEvent = Beacons.BeaconsEventEmitter.addListener(
       'regionDidExit',
       ({ identifier, uuid, minor, major }) => {
-        this.setState({ message:  'regionDidExit event'});
-        console.log('regionDidExit, data: ', {identifier, uuid, minor, major});
+        this.setState({ message: 'regionDidExit event' });
+        console.log('regionDidExit, data: ', { identifier, uuid, minor, major });
         const time = moment().format(TIME_FORMAT);
         const updatedBeaconsLists = this.updateBeaconList({ identifier, uuid, minor, major, time }, 'monitorExitList');
         this._beaconsLists = updatedBeaconsLists;
-        this.setState({ beaconsLists: this.state.beaconsLists.cloneWithRowsAndSections(this._beaconsLists)});
-      }
+        this.setState({ beaconsLists: this.state.beaconsLists.cloneWithRowsAndSections(this._beaconsLists) });
+      },
     );
     this.updateBluetoothStatus();
   }
 
   async updateBluetoothStatus() {
-    try{
+    try {
       console.log(BluetoothStatus);
       const isEnabled = await BluetoothStatus.state();
-      console.log("isEnabled ", isEnabled);
+      console.log('isEnabled', isEnabled);
       this.setState({ bluetoothState: (isEnabled) ? 'On' : 'Off' });
-    } catch(err) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
-
   }
 
-  componentWillUnMount() {
+  componentWillUnmount() {
     const { uuid, identifier } = this.state;
 
     const region = { identifier, uuid }; // minor and major are null here
 
     // stop monitoring beacons:
     Beacons
-    .stopMonitoringForRegion(region)
-    .then(() => console.log('Beacons monitoring stopped succesfully'))
-    .catch(error => console.log(`Beacons monitoring not stopped, error: ${error}`));
+      .stopMonitoringForRegion(region)
+      .then(() => console.log('Beacons monitoring stopped succesfully'))
+      .catch(error => console.log(`Beacons monitoring not stopped, error: ${error}`));
 
     // stop ranging beacons:
     Beacons
-    .stopRangingBeaconsInRegion(region)
-    .then(() => console.log('Beacons ranging stopped succesfully'))
-    .catch(error => console.log(`Beacons ranging not stopped, error: ${error}`));
+      .stopRangingBeaconsInRegion(region)
+      .then(() => console.log('Beacons ranging stopped succesfully'))
+      .catch(error => console.log(`Beacons ranging not stopped, error: ${error}`));
 
     // stop updating locationManager:
     Beacons.stopUpdatingLocation();
@@ -192,14 +186,14 @@ export default class Location extends Component {
     const {
       bluetoothState,
       beaconsLists,
-      message
+      message,
     } = this.state;
 
     return (
       <View style={styles.container}>
 
         <Text>
-          Bluetooth status: { bluetoothState } 
+          Bluetooth status: { bluetoothState }
         </Text>
         <Text>
           { message }
@@ -207,24 +201,24 @@ export default class Location extends Component {
 
         <View style={styles.justFlex}>
           <ListView
-            dataSource={ beaconsLists }
-            enableEmptySections={ true }
+            dataSource={beaconsLists}
+            enableEmptySections
             renderRow={this.renderBeaconRow}
             renderSectionHeader={this.renderBeaconSectionHeader}
           />
         </View>
 
-       </View>
+      </View>
     );
   }
 
-  renderBeaconRow = (rowData) => (
+  renderBeaconRow = rowData => (
     <View style={styles.row}>
       <Text style={styles.smallText}>
         Identifier: {rowData.identifier ? rowData.identifier : 'NA'}
       </Text>
       <Text style={styles.smallText}>
-        UUID: {rowData.uuid ? rowData.uuid  : 'NA'}
+        UUID: {rowData.uuid ? rowData.uuid : 'NA'}
       </Text>
       <Text style={styles.smallText}>
         Major: {rowData.major ? rowData.major : 'NA'}
@@ -249,26 +243,26 @@ export default class Location extends Component {
 
   renderBeaconSectionHeader = (sectionData, header) => (
     <Text style={styles.rowSection}>
-       {header}
-     </Text>
-   );
+      {header}
+    </Text>
+  );
 
   updateBeaconList = (detectedBeacons = [], listName = '') => {
     // just a deep copy of "this._beaconsLists":
-    const previousLists   = deepCopyBeaconsLists(this._beaconsLists);
+    const previousLists = deepCopyBeaconsLists(this._beaconsLists);
     const listNameIsValid = Object.keys(EMPTY_BEACONS_LISTS).some(header => header === listName);
-    const updateMatchingList = beacon => {
+    const updateMatchingList = (beacon) => {
       if (beacon.uuid.length > 0) {
-        const uuid  = beacon.uuid.toUpperCase();
+        const uuid = beacon.uuid.toUpperCase();
         const major = parseInt(beacon.major, 10) ? beacon.major : 0;
         const minor = parseInt(beacon.minor, 10) ? beacon.minor : 0;
 
         const hasEqualProp = (left, right) => (String(left).toUpperCase() === String(right).toUpperCase());
-        const isNotTheSameBeacon = beaconDetail => {
-          return !hasEqualProp(beaconDetail.uuid, uuid)
-              || !hasEqualProp(beaconDetail.major, major)
-              || !hasEqualProp(beaconDetail.minor, minor);
-        };
+        const isNotTheSameBeacon = beaconDetail => (
+          !hasEqualProp(beaconDetail.uuid, uuid)
+          || !hasEqualProp(beaconDetail.major, major)
+          || !hasEqualProp(beaconDetail.minor, minor)
+        );
 
         const otherBeaconsInSameList = previousLists[listName].filter(isNotTheSameBeacon);
         previousLists[listName] = [...otherBeaconsInSameList, beacon];
@@ -283,9 +277,8 @@ export default class Location extends Component {
       if (detectedBeacons instanceof Object) {
         updateMatchingList(detectedBeacons);
         return previousLists;
-      } else {
-        return previousLists;
       }
+      return previousLists;
     }
 
     detectedBeacons.forEach(updateMatchingList);
@@ -294,37 +287,37 @@ export default class Location extends Component {
 }
 
 const styles = StyleSheet.create({
- container: {
-   flex: 1,
-   paddingTop: 60,
-   margin: 5,
-   backgroundColor: '#F5FCFF',
- },
- justFlex: {
-   flex: 1
- },
- contentContainer: {
-   flex: 1,
-   justifyContent: 'center',
-   alignItems: 'center',
- },
- btleConnectionStatus: {
-   fontSize: 20,
-   paddingTop: 20
- },
- headline: {
-   fontSize: 20,
-   paddingTop: 20,
-   marginBottom: 20
- },
- row: {
-   padding: 8,
-   paddingBottom: 16
- },
-   smallText: {
-   fontSize: 11
- },
- rowSection: {
-   fontWeight: '700'
- }
+  container: {
+    flex: 1,
+    paddingTop: 60,
+    margin: 5,
+    backgroundColor: '#F5FCFF',
+  },
+  justFlex: {
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btleConnectionStatus: {
+    fontSize: 20,
+    paddingTop: 20,
+  },
+  headline: {
+    fontSize: 20,
+    paddingTop: 20,
+    marginBottom: 20,
+  },
+  row: {
+    padding: 8,
+    paddingBottom: 16,
+  },
+  smallText: {
+    fontSize: 11,
+  },
+  rowSection: {
+    fontWeight: '700',
+  },
 });

@@ -16,8 +16,10 @@ import {
   FormInput,
   FormLabel,
 } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { registerWizard } from '../redux/home'
 
-export default class Home extends Component {
+class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,7 +28,7 @@ export default class Home extends Component {
   }
 
   onPress = () => {
-    this.props.onPress();
+    this.props.dispatchRegisterWizard(this.state.input);
     this.props.navigation.navigate('Location', {
       input: this.state.input,
     });
@@ -76,6 +78,7 @@ Home.propTypes = ({
   // error: PropTypes.Object.isRequired,
   // isRegistering: PropTypes.bool.isRequired,
   onPress: PropTypes.func,
+  dispatchRegisterWizard: PropTypes.func.isRequired
 });
 
 const styles = StyleSheet.create({
@@ -90,3 +93,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
 });
+
+const mapDispatchToProps = dispatch => ({
+  dispatchRegisterWizard: wizardName => dispatch(registerWizard(wizardName)),
+});
+
+export default connect(null, mapDispatchToProps)(Home);

@@ -16,6 +16,7 @@ import Beacons                from 'react-native-beacons-manager';
 import { BluetoothStatus } from 'react-native-bluetooth-status';
 import { updateLocationApi } from '../redux/location';
 import moment from 'moment';
+import { connect } from 'react-redux';
 
 /**
 * uuid of YOUR BEACON (change to yours)
@@ -27,7 +28,7 @@ const IDENTIFIER = 'Slytherin common room';
 const OTHER_UUID = '87814C62-2219-46F7-95BA-58E745BEE995';
 const OTHER_IDENTIFIER = 'sloth';
 
-export default class Location extends Component {
+class Location extends Component {
   // will be set as a reference to "beaconsDidRange" event:
   beaconsDidRangeEvent = null;
 
@@ -153,6 +154,9 @@ export default class Location extends Component {
 
      return (
        <View style={styles.container}>
+        <Text style={styles.btleConnectionStatus}>
+          wizard name is: {this.props.wizardName}
+       </Text>
          <Text style={styles.btleConnectionStatus}>
            Bluetooth connection status: { bluetoothState ? bluetoothState  : 'NA' }
          </Text>
@@ -245,3 +249,9 @@ const styles = StyleSheet.create({
    fontSize: 11
  },
 });
+
+const mapStateToProps = state => ({
+  wizardName: state.newWizard.wizard,
+});
+
+export default connect(mapStateToProps)(Location);

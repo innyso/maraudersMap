@@ -14,6 +14,8 @@ import {
 }                             from 'react-native';
 import Beacons                from 'react-native-beacons-manager';
 import { BluetoothStatus } from 'react-native-bluetooth-status';
+import { updateLocationApi } from '../redux/location';
+import moment from 'moment';
 
 /**
 * uuid of YOUR BEACON (change to yours)
@@ -50,12 +52,17 @@ export default class Location extends Component {
 
    // check bluetooth state:
    bluetoothState: '',
+   beaconLastUpdate: {},
   };
+
 
    componentWillMount(){
      const { identifier, uuid } = this.state;
      const { otherIdentifier, otherUUID } = this.state;
+     const curretTimestamp = moment().format();
 
+     this.state.beaconLastUpdate[uuid] = curretTimestamp;
+     this.state.beaconLastUpdate[otherUUID] = curretTimestamp;
      Beacons.requestAlwaysAuthorization();
 
      const region = { identifier, uuid };
@@ -88,6 +95,17 @@ export default class Location extends Component {
          console.log('beaconsDidRange data: ', data);
          const { beacons } = data;
          const { rangingDataSource } = this.state;
+         const currentTime = moment().format();
+         const timeDifference = moment(currentTime).diff(this.state.beaconLastUpdate[data.region.uuid]);
+         const parseTimeDifference = parseInt(moment(timeDifference).format('ss'));
+
+         if (parseTimeDifference > 30) {
+          console.log('need to call update location api as it is more than 30s');
+           this.state.beaconLastUpdate[data.region.uuid] = currentTime;
+           //if beacons is not empty
+          } else {
+            console.log('dont need to call api yet');
+          }
          this.setState({
            rangingDataSource: rangingDataSource.cloneWithRowsAndSections(this.convertRangingArrayToMap(beacons))
          });

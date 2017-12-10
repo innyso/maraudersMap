@@ -4,7 +4,7 @@ const UPDATE_LOCATION_START = 'UPDATE_LOCATION_START';
 const UPDATE_LOCATION_SUCCESS = 'UPDATE_LOCATION_SUCCESS';
 const UPDATE_LOCATION_FAIL = 'UPDATE_LOCATION_FAIL';
 
-export const callMovieApi = location => (dispatch) => {
+export const updateLocationApi = location => (dispatch) => {
   dispatch({ type: UPDATE_LOCATION_START });
   return updateLocation(location)
     .then(() => dispatch({ type: UPDATE_LOCATION_SUCCESS }))

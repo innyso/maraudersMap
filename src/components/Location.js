@@ -28,6 +28,8 @@ const IDENTIFIER = 'Slytherin common room';
 const OTHER_UUID = '87814C62-2219-46F7-95BA-58E745BEE995';
 const OTHER_IDENTIFIER = 'sloth';
 
+const WAIT_TIME = 10;
+
 class Location extends Component {
   // will be set as a reference to "beaconsDidRange" event:
   beaconsDidRangeEvent = null;
@@ -60,10 +62,13 @@ class Location extends Component {
    componentWillMount(){
      const { identifier, uuid } = this.state;
      const { otherIdentifier, otherUUID } = this.state;
-     const curretTimestamp = moment().format();
+     const currentTime = moment().format();
+     const initialTime = moment(currentTime).add(WAIT_TIME, 'seconds');
 
-     this.state.beaconLastUpdate[uuid] = curretTimestamp;
-     this.state.beaconLastUpdate[otherUUID] = curretTimestamp;
+     // initial to be more than wait duration to make sure data will
+     // get send when app first launch
+     this.state.beaconLastUpdate[uuid] = initialTime;
+     this.state.beaconLastUpdate[otherUUID] = initialTime;
      Beacons.requestAlwaysAuthorization();
 
      const region = { identifier, uuid };
@@ -93,19 +98,31 @@ class Location extends Component {
      this.beaconsDidRangeEvent = Beacons.BeaconsEventEmitter.addListener(
        'beaconsDidRange',
        (data) => {
-         console.log('beaconsDidRange data: ', data);
          const { beacons } = data;
+         const { identifier } = data.region;
          const { rangingDataSource } = this.state;
          const currentTime = moment().format();
+
          const timeDifference = moment(currentTime).diff(this.state.beaconLastUpdate[data.region.uuid]);
          const parseTimeDifference = parseInt(moment(timeDifference).format('ss'));
 
-         if (parseTimeDifference > 30) {
-          console.log('need to call update location api as it is more than 30s');
+         if (parseTimeDifference >= 10) {
+           const singleBeacon = data.beacons[0];
+           console.log('beaconsDidRange data: ', data);
+           console.log('need to call update location api as it is more than 10s');
            this.state.beaconLastUpdate[data.region.uuid] = currentTime;
+
+           if (data.beacons.length > 0 && singleBeacon.proximity !== 'unknown') {
+             var currentLocation = singleBeacon;
+             currentLocation["Name"] = identifier;
+             console.log('inside if case', currentLocation);
+           }
+             console.log('outside and data.beacons length is 0');
+
            //if beacons is not empty
           } else {
-            console.log('dont need to call api yet');
+           console.log('parseTimeDifference: ', parseTimeDifference);
+           console.log('dont need to call api yet');
           }
          this.setState({
            rangingDataSource: rangingDataSource.cloneWithRowsAndSections(this.convertRangingArrayToMap(beacons))

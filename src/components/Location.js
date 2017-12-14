@@ -28,7 +28,7 @@ const IDENTIFIER = 'Slytherin common room';
 const OTHER_UUID = '87814C62-2219-46F7-95BA-58E745BEE995';
 const OTHER_IDENTIFIER = 'sloth';
 
-const WAIT_TIME = 10;
+const WAIT_TIME = 1;
 
 class Location extends Component {
   // will be set as a reference to "beaconsDidRange" event:
@@ -94,6 +94,7 @@ class Location extends Component {
      // component state aware here - attach events
      //
 
+     Beacons.allowsBackgroundLocationUpdates(true);
      // Ranging: Listen for beacon changes
      this.beaconsDidRangeEvent = Beacons.BeaconsEventEmitter.addListener(
        'beaconsDidRange',
@@ -106,24 +107,24 @@ class Location extends Component {
          const timeDifference = moment(currentTime).diff(this.state.beaconLastUpdate[data.region.uuid]);
          const parseTimeDifference = parseInt(moment(timeDifference).format('ss'));
 
-         if (parseTimeDifference >= 10) {
+         if (parseTimeDifference >= WAIT_TIME) {
            const singleBeacon = data.beacons[0];
            console.log('beaconsDidRange data: ', data);
-           console.log('need to call update location api as it is more than 10s');
            this.state.beaconLastUpdate[data.region.uuid] = currentTime;
 
-           if (data.beacons.length > 0 && singleBeacon.proximity !== 'unknown') {
-             var currentLocation = singleBeacon;
-             currentLocation["Name"] = identifier;
-             console.log('inside if case', currentLocation);
-           }
-             console.log('outside and data.beacons length is 0');
+           if (data.beacons.length > 0 ) {
 
-           //if beacons is not empty
-          } else {
-           console.log('parseTimeDifference: ', parseTimeDifference);
-           console.log('dont need to call api yet');
-          }
+             var currentLocation = singleBeacon;
+             currentLocation.Name = this.props.wizardName;
+             currentLocation.RegionName = identifier;
+             console.log('inside if case', currentLocation);
+             fetch('http://192.168.8.101:1234/updateLocation/',{
+               method: 'post',
+               body: JSON.stringify(currentLocation)
+             }).then(res => res.json())
+               .catch(err => console.log(err));
+           }
+         }
          this.setState({
            rangingDataSource: rangingDataSource.cloneWithRowsAndSections(this.convertRangingArrayToMap(beacons))
          });
@@ -271,4 +272,8 @@ const mapStateToProps = state => ({
   wizardName: state.newWizard.wizard,
 });
 
-export default connect(mapStateToProps)(Location);
+const mapDispatchToProps = dispatch => ({
+  dispatchUploadLocation: location => dispatch(updateLocationApi(location))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Location);
